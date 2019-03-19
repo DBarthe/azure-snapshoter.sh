@@ -1,0 +1,17 @@
+schedule: "* * * * *"
+
+# required values
+resource_group: snapshots
+location: westeurope
+snapshot_base_name: nexus
+
+# optional (either disk_id or disk_tag is required)
+disk_id:
+disk_tag: kubernetes.io-created-for-pvc-name=nexus-sonatype-nexus-data
+
+use_secret: true
+
+# set this from the command line
+#sp_id:
+#sp_password:
+#tenant_id:

@@ -1,0 +1,102 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: {{ template "azure-snapshoter.fullname" . }}
+  labels:
+    app: {{ template "azure-snapshoter.fullname" . }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  concurrencyPolicy: {{ .Values.concurrencyPolicy }}
+  failedJobsHistoryLimit: {{ .Values.failedJobsHistoryLimit }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          name: {{ template "azure-snapshoter.fullname" . }}
+          labels:
+            app: {{ template "azure-snapshoter.fullname" . }}
+            chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+            release: "{{ .Release.Name }}"
+            heritage: "{{ .Release.Service }}"
+        spec:
+          containers:
+          - image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.imagePullPolicy }}
+            name: azure-snapshoter
+            env:
+              - name: RESOURCE_GROUP
+                value: {{ required "resource_group is required" .Values.resource_group }}
+              - name: SNAPSHOT_BASE_NAME
+                value: {{ required "snapshot_base_name is required" .Values.snapshot_base_name }}
+              - name: LOCATION
+                value: {{ required "snapshot_base_name is required" .Values.location }}
+              - name: DISK_ID
+                value: {{ .Values.disk_id }}
+              - name: DISK_TAG
+                value: {{ .Values.disk_tag }}
+              - name: SP_ID
+              {{- if .Values.use_secret }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "azure-snapshoter.fullname" . }}
+                    key: sp_id
+              {{- else }}
+                value: {{ required "sp_id is required" .Values.sp_id}}
+              {{- end }}
+              - name: SP_PASSWORD
+              {{- if .Values.use_secret }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "azure-snapshoter.fullname" . }}
+                    key: sp_password
+              {{- else }}
+                value: {{ required "sp_password is required" .Values.sp_password}}
+              {{- end }}
+              - name: TENANT_ID
+              {{- if .Values.use_secret }}
+                valueFrom:
+                  secretKeyRef:
+                    name: {{ template "azure-snapshoter.fullname" . }}
+                    key: tenant_id
+              {{- else }}
+                value: {{ required "tenant_id is required" .Values.tenant_id}}
+              {{- end }}
+            {{- with .Values.env }}
+{{ toYaml .Values.env | indent 12 }}
+            {{- end }}
+            {{- if .Values.command }}
+            command: {{ .Values.command }}
+            {{- end }}
+            {{- with .Values.args }}
+            args:
+{{ toYaml . | indent 12 }}
+            {{- with .Values.resources }}
+            resources:
+{{ toYaml . | indent 14 }}
+            {{- end }}
+            {{- with .Values.volumeMounts }}
+            volumeMounts:
+{{ toYaml . | indent 12 }}
+            {{- end }}
+              {{- end }}
+          {{- with .Values.nodeSelector }}
+          nodeSelector:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+          affinity:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+          tolerations:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+          restartPolicy: {{ .Values.restartPolicy }}
+          {{- with .Values.volumes }}
+          volumes:
+{{ toYaml . | indent 12 }}
+          {{- end }}
+  schedule: {{ .Values.schedule | quote }}
+  successfulJobsHistoryLimit: {{ .Values.successfulJobsHistoryLimit }}

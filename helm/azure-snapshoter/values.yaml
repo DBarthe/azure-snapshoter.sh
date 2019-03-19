@@ -1,0 +1,25 @@
+image:
+  repository: barthelemy/azure-snapshoter
+  tag: latest
+  pullPolicy: IfNotPresent
+failedJobsHistoryLimit: 10
+successfulJobsHistoryLimit: 10
+concurrencyPolicy: Forbid
+restartPolicy: OnFailure
+
+schedule: "* * * * *"
+
+# required values
+resource_group:
+location:
+snapshot_base_name:
+
+# optional (either disk_id or disk_tag is required)
+disk_id:
+disk_tag:
+
+use_secret: true
+sp_id:
+sp_password:
+tenant_id:
+
