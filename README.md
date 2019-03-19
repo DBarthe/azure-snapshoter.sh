@@ -28,9 +28,21 @@ Then, run the script :
 ./azure-snapshoter.sh
 ```
 
+## Run with docker
+
+```bash
+docker run --rm -it \
+  -e SP_ID=[azure sp id] \
+  -e SP_PASSWORD=[azure sp password] \
+  -e TENANT_ID=[azure tenant id] \
+  -e RESOURCE_GROUP=[...] \
+  -e LOCATION=[...] \
+  -e SNAPSHOT_BASE_NAME=[...] \
+  -e DISK_TAG=[...] \
+   barthelemy/azure-snapshoter
+```
+
 ## TODO
 
 - manage snapshot retention
-- helper for authentication and service principal
-- build a container image
 - kubernetes cron job manifest

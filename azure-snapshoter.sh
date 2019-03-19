@@ -3,8 +3,6 @@
 set -xe
 
 main() {
-  test_variables # for testing
-
   # where to store the snapshots
   # tag to track (optional if disk id is set)
   require RESOURCE_GROUP
