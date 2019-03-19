@@ -48,7 +48,8 @@ docker run --rm -it \
 
 The helm package helps doing this, checkout the `examples/values.yaml` first, then try :
 ```bash
-helm install helm/azure-snapshoter -f examples/values.yaml \
+helm repo add azure-snapshoter https://dbarthe.github.io/azure-snapshoter.sh/helm
+helm install azure-snapshoter/azure-snapshoter -f examples/values.yaml \
   --set-string sp_id=$SP_ID,sp_password=$SP_PASSWORD,tenant_id=$TENANT_ID
 ```
 
