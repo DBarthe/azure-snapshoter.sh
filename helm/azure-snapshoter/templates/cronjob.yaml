@@ -31,7 +31,7 @@ spec:
               - name: SNAPSHOT_BASE_NAME
                 value: {{ required "snapshot_base_name is required" .Values.snapshot_base_name }}
               - name: LOCATION
-                value: {{ required "snapshot_base_name is required" .Values.location }}
+                value: {{ required "location is required" .Values.location }}
               - name: DISK_ID
                 value: {{ .Values.disk_id }}
               - name: DISK_TAG
