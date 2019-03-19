@@ -3,3 +3,5 @@ README.md
 .gitignore
 create-az-sp.sh
 test.in.sh
+helm/
+update-helm.sh
