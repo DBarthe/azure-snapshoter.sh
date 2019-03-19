@@ -1,0 +1,22 @@
+apiVersion: v1
+entries:
+  azure-snapshoter:
+  - apiVersion: v1
+    created: 2019-03-19T23:45:28.582256435+01:00
+    description: A Helm chart for Kubernetes
+    digest: 1463ffac8a9ce6c7c6a2e65f92774ce1f6763a436b111db001e034e5e62aa423
+    keywords:
+    - azure
+    - snapshot
+    - disk
+    - backup
+    maintainers:
+    - email: barthelemy.delemotte+helm@gmail.com
+      name: dbarthe
+    name: azure-snapshoter
+    sources:
+    - https://github.com/barthelemy/azure-snapshoter.sh
+    urls:
+    - https://github.com/DBarthe/azure-snapshoter.sh/tree/master/helm/azure-snapshoter-0.1.0.tgz
+    version: 0.1.0
+generated: 2019-03-19T23:45:28.581878939+01:00
