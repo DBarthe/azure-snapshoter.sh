@@ -36,6 +36,8 @@ spec:
                 value: {{ .Values.disk_id }}
               - name: DISK_TAG
                 value: {{ .Values.disk_tag }}
+              - name: RETENTION
+                value: {{ .Values.retention }}
               - name: SP_ID
               {{- if .Values.use_secret }}
                 valueFrom:

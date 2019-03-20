@@ -21,6 +21,16 @@ export DISK_ID=[managed_disk_id]
 export DISK_TAG="key=value"
 ```
 
+Optionally define how long you want to keep the snapshots (in plain english):
+```bash
+export RETENTION="1 month"
+
+# or 
+export RETENTION="3 days"
+
+# or anything that fit in `date -d "-$RETENTION"`
+```
+
 Tag is useful is you want to snapshot a Kubernetes persistent volume for instance : `kubernetes.io-created-for-pvc-name=nexus-sonatype-data`.
 
 Then, run the script :
@@ -39,6 +49,7 @@ docker run --rm -it \
   -e LOCATION=[...] \
   -e SNAPSHOT_BASE_NAME=[...] \
   -e DISK_TAG=[...] \
+  -e RETENTION="10 days" \
    barthelemy/azure-snapshoter
 ```
 
@@ -46,15 +57,35 @@ docker run --rm -it \
 
 **azure-snapshoter.sh** runs fine as a [kubernetes cronjob](https://kubernetes.io/docs/tasks/job/automated-tasks-with-cron-jobs/).
 
-The helm package helps doing this, checkout the `examples/values.yaml` first, then try :
+There is an Helm chart to make it easy, start by adding this repo :
 ```bash
 helm repo add azure-snapshoter https://dbarthe.github.io/azure-snapshoter.sh/helm
-helm install azure-snapshoter/azure-snapshoter -f examples/values.yaml \
+```
+
+Create a file `values.yaml`:
+```yaml
+schedule: "* * * * *"
+retention: "10 days"
+
+# required values
+resource_group: snapshots
+location: westeurope
+snapshot_base_name: nexus
+
+# optional (either disk_id or disk_tag is required)
+disk_id:
+disk_tag: kubernetes.io-created-for-pvc-name=nexus-sonatype-nexus-data
+
+# azure credentials stored as k8s secret - can be set from the command line
+#sp_id:
+#sp_password:
+#tenant_id:
+```
+
+Then install it (requires Tiller to be deployed):
+```
+helm install azure-snapshoter/azure-snapshoter -f values.yaml \
   --set-string sp_id=$SP_ID,sp_password=$SP_PASSWORD,tenant_id=$TENANT_ID
 ```
 
-It creates a secret for the azure credentials.
-
-## TODO
-
-- manage snapshot retention
+Checkout [helm/azure-snapshoter/values.yaml]() for more options.

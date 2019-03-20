@@ -2,12 +2,15 @@ image:
   repository: barthelemy/azure-snapshoter
   tag: latest
   pullPolicy: IfNotPresent
-failedJobsHistoryLimit: 10
-successfulJobsHistoryLimit: 10
+failedJobsHistoryLimit: 3
+successfulJobsHistoryLimit: 3
 concurrencyPolicy: Forbid
 restartPolicy: OnFailure
 
 schedule: "* * * * *"
+
+# optional : how long before to delete the snapshot, in plain english : "1 month", "5 days"...
+retention:
 
 # required values
 resource_group:

@@ -11,6 +11,9 @@ main() {
   # base name of the snapshot
   require SNAPSHOT_BASE_NAME
 
+  # how long time to keep the snapshots in plain english ("1 month", "2 days", "5 hours", ...)
+  # optional RETENTION
+
   # either DISK_ID or DISK_TAG must be specified
   if [ "$DISK_TAG" = "" ] && [ "$DISK_ID" = "" ]; then
     echo "Either DISK_TAG or DISK_ID is required"
@@ -23,6 +26,12 @@ main() {
   local name="$SNAPSHOT_BASE_NAME-$(date +%Y-%m-%d-%H-%M)"
 
   create_snapshot $name
+
+  if [ "$RETENTION" != "" ]; then
+    delete_old_snapshots
+  else
+    echo "No RETENTION set. Did not delete anything"
+  fi
 }
 
 require() {
@@ -50,6 +59,25 @@ get_disk_id() {
     exit 1
   fi
   echo $id_list
+}
+
+get_old_snapshots() {
+  local delete_before=$(date -d "-$RETENTION")
+  local delete_before_ts=$(date +%s -d "-$RETENTION")
+
+  echo "Looking for snapshots to delete before $delete_before" >&2;
+
+  az snapshot list -g $RESOURCE_GROUP |
+    jq -r '.[] | select(.name|startswith("'$SNAPSHOT_BASE_NAME'-")) |
+      select(.timeCreated | sub("\\.[0-9]+\\+.*$"; "") | strptime("%Y-%m-%dT%H:%M:%S") | mktime < '$delete_before_ts')|.id'
+}
+
+delete_old_snapshots() {
+
+  for id in $(get_old_snapshots); do
+     echo "deleting snapshot $id ..."
+     az snapshot delete --ids "$id"
+  done
 }
 
 main $@
